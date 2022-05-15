@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+{% load static %}
+<link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+    <script src = "{% static 'jquery-3.6.0.min.js' %}"></script>
+    <script src = "{% static 'bootstrap.min.js' %}"></script>
+</head>
+<body><div class="container my-3">
+    <table class="table">
+        <thead>
+        <tr class="table-dark">
+            <th>번호</th>
+            <th>제목</th>
+            <th>작성일시</th>
+            <th>상세정보</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% if question_list %}
+        {% for question in question_list %}
+        <tr>
+            <td>{{ forloop.counter }}</td>
+            <td>
+                 <a href="{% url 'pybo:detail' question.id %}" id="modalclick">{{ question.subject }}</a>
+            </td>
+            <td>{{ question.create_date }}</td>
+            <td>
+<!-- Button trigger modal -->
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" id=btn name="btn" data-bs-target="#exampleModal">
+      상세정보 확인
+    </button>
+                <input type="hidden" id="name" value="{{question.id}}">
+            </td>
+        </tr>
+        {% endfor %}
+        {% else %}
+        <tr>
+            <td colspan="3">질문이 없습니다.</td>
+        </tr>
+        {% endif %}
+        </tbody>
+    </table>
+</div>
+
+<!-- Modal -->
+{% if question_list %}
+{% for quest in question_list %}
+{if quest.id ==
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLabel">{{question.subject}}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        {{question.content}}
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+        <button type="button" class="btn btn-primary">Save changes</button>
+      </div>
+    </div>
+  </div>
+</div>
+{% block script %}
+<script type="text/javascript">
+   $(document).on('click','#btn',function(){
+    data = $('#name').val();
+    $.ajax({
+        type:'POST',
+        url:'127.0.0.1:8000/pybo',
+        data:JSON.stringify(data),
+        success:function(json){
+            console.log("data pass success",json);
+        },
+        error : function(xhr,errmsg,err) {
+        console.log(xhr.status + ": " + xhr.responseText);
+        }
+   });
+   });
+
+</script>
+{% endblock %}
+</body>
+</html>
