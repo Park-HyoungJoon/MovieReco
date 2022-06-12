@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+{% load static %}
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{% static 'search_main.css' %}">
+    <script type="text/javascript" src="search.js"></script>
+    <script src="http://code.jquery.com/jquery-latest.min.js"></script>
+    <title>검색창</title>
+
+    <script>
+        function addsearch() {
+            var text_add = $("#text_add").val();
+            if(text_add.length > 0 ) ; {
+            var ul_list = $("#ul_list");
+            ul_list.append("<li>"+text_add+"</li>");
+            }
+        }
+    </script>
+
+</head>
+
+
+
+<body>
+    <div class = "every">
+    <div class = container>
+    <div class="search">
+        <input type="text" id = "text_add"  placeholder="제목 또는 카테고리를 입력해주세요"/>
+        <button type = "button" id = "submitbtn" onclick = "addsearch()"> <img src="https://s3.ap-northeast-2.amazonaws.com/cdn.wecode.co.kr/icon/search.png"> </button>
+      </div>
+      <div class = container0>
+      <ul id="ul_list">
+      <ul>
+      </div>
+        <div class = container0>
+                 <a href="{% url 'pybo:main' %}" id="searchgobtn" >GO >></a>
+           <!-- <button type = "button" id = "searchgobtn"  onclick="location.href='{% url 'pybo:main' %}"> GO >> </button>
+      -->  </div>
+    </div>
+
+
+</div>
+
+</body>
+</html>

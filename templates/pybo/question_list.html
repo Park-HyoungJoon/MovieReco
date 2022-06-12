@@ -5,8 +5,15 @@
     <title>Title</title>
 {% load static %}
 <link rel="stylesheet" type="text/css" href="{% static 'bootstrap.min.css' %}">
+<link rel="stylesheet" type="text/css" href="{% static 'pitChart.css' %}">
     <script src = "{% static 'jquery-3.6.0.min.js' %}"></script>
     <script src = "{% static 'bootstrap.min.js' %}"></script>
+    <script src = "{% static 'pieChart.js' %}"></script>
+<script src="https://code.highcharts.com/highcharts.js"></script>
+<script src="https://code.highcharts.com/modules/exporting.js"></script>
+<script src="https://code.highcharts.com/modules/export-data.js"></script>
+<script src="https://code.highcharts.com/modules/accessibility.js"></script>
+
 </head>
 <body><div class="container my-3">
     <table class="table">
@@ -15,11 +22,11 @@
             <th>번호</th>
             <th>제목</th>
             <th>작성일시</th>
-            <th>상세정보</th>
         </tr>
         </thead>
         <tbody>
-        {% if question_list %}
+
+            <th>상세정보</th>{% if question_list %}
         {% for question in question_list %}
         <tr>
             <td>{{ forloop.counter }}</td>
@@ -29,10 +36,22 @@
             <td>{{ question.create_date }}</td>
             <td>
 <!-- Button trigger modal -->
-    <button type="button" class="btn btn-primary" data-bs-toggle="modal" id=btn name="btn" data-bs-target="#exampleModal">
+    <button type="button" class="btn btn-primary" data-bs-toggle="modal" id=btn name="btn" data-bs-target="#exampleModal"
+                data-whatever="{{question.id}}" >
       상세정보 확인
     </button>
-                <input type="hidden" id="name" value="{{question.id}}">
+                <input type="hidden" id="name" value="{{question}}">
+                <input type="hidden" id="title" value="{{title}}">
+                <input type="hidden" id="subtitle" value="{{subtitle}}">
+                <input type="hidden" id="director" value="{{director}}">
+                <input type="hidden" id="actors" value="{{actors}}">
+                <input type="hidden" id="date" value="{{date}}">
+                <input type="hidden" id="img" value="{{image}}">
+                <input type="hidden" id="rating" value="{{rating}}">
+                <input type="hidden" id="size" value="{{question_list}}">
+
+                <input type="hidden" id="positive" value="{{positive}}">
+                <input type="hidden" id="negative" value="{{negative}}">
             </td>
         </tr>
         {% endfor %}
@@ -46,43 +65,147 @@
 </div>
 
 <!-- Modal -->
-{% if question_list %}
-{% for quest in question_list %}
-{if quest.id ==
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
   <div class="modal-dialog">
-    <div class="modal-content">
+    <div class="modal-content" style="width:800px; margin-left:-200px;">
       <div class="modal-header">
         <h5 class="modal-title" id="exampleModalLabel">{{question.subject}}</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <div class="modal-body">
-        {{question.content}}
+      <div class="modal-body" id="modalbo">
+
       </div>
+        <figure class="highcharts-figure">
+    <div id="container"></div>
+    <p class="highcharts-description">
+    </p>
+</figure>
+
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-        <button type="button" class="btn btn-primary">Save changes</button>
       </div>
     </div>
   </div>
 </div>
 {% block script %}
-<script type="text/javascript">
-   $(document).on('click','#btn',function(){
-    data = $('#name').val();
-    $.ajax({
-        type:'POST',
-        url:'127.0.0.1:8000/pybo',
-        data:JSON.stringify(data),
-        success:function(json){
-            console.log("data pass success",json);
-        },
-        error : function(xhr,errmsg,err) {
-        console.log(xhr.status + ": " + xhr.responseText);
-        }
-   });
-   });
 
+<!--심리파악-->
+<script type="text/javascript">
+$(document).ready(function() {
+	$('#exampleModal').on('show.bs.modal', function (event) {
+	      item = document.getElementById("name");
+	      var tem = item.value;
+		  var button = $(event.relatedTarget);
+		  var recipient = button.data('whatever');
+		  console.log(recipient)
+          var size = document.getElementById("size").value;
+          var str = size.split(',').length;
+          recipient = str - recipient;
+          console.log(str);
+		  var title = document.getElementById("title").value;
+		  title = title.replace("<br>",'');
+		  title = title.replace("</br>",'');
+		  title= title.replace("[",'');
+		  title= title.replace("]",'');
+          var titlearr = title.split(",");
+		  var subtitle = document.getElementById("subtitle").value;
+          subtitle= subtitle.replace("[",'');
+		  subtitle= subtitle.replace("]",'');
+          var subtitlearr = subtitle.split(",");
+		  var director = document.getElementById("director").value;
+          director= director.replace("[",'');
+		  director= director.replace("]",'');
+          var directorarr = director.split(",");
+		  var actors = document.getElementById("actors").value;
+          actors= actors.replace("[",'');
+		  actors= actors.replace("]",'');
+          var actorsarr = actors.split(",");
+		  var date = document.getElementById("date").value;
+          date= date.replace("[",'');
+		  date= date.replace("]",'');
+          var datearr = date.split(",");
+		  var rating = document.getElementById("rating").value;
+          rating= rating.replace("[",'');
+		  rating= rating.replace("]",'');
+          var ratingarr = rating.split(",");
+		  var image = document.getElementById("img").value;
+		  console.log(image)
+		  var reg = /[\{\}\[\]\/?.;:|\)*~`!^\-_+<>@\#$%&\\\=\(\'\"]/gi;
+          image= image.replace("[",'');
+		  image= image.replace("]",'');
+		  image= image.replace(/\'/gi,'');
+          var imagearr = image.split(",");
+          console.log(imagearr)
+		  var modal = $(this);
+		  modal.find('.modal-title').text(recipient);
+		  console.log(imagearr[recipient])
+		  document.getElementById("modalbo").innerHTML = ''+
+              '<div style="float:left;"><img src="' + imagearr[recipient] + '" style="width:150px;height:300px;"></div>'+
+              '<h2>제목 : ' +  titlearr[recipient]+ ' </h2>'+
+              '<p>영어제목 : ' + subtitlearr[recipient]+ '  </p>'+
+              '<p>감독: ' + directorarr[recipient] + '</p>'+
+              '<p>배우 : ' + actorsarr[recipient]  + ' </p>'+
+              '<p>평점 : ' +  ratingarr[recipient] + ' </p>'+
+              '<p>제작년도 : ' + datearr[recipient] + '</p>'+
+		  '';
+
+
+Highcharts.chart('container', {
+    chart: {
+        plotBackgroundColor: null,
+        plotBorderWidth: null,
+        plotShadow: false,
+        type: 'pie'
+    },
+    title: {
+        text: '영화에 대한 트위터 심리지수'
+    },
+    tooltip: {
+        pointFormat: '{series.name}: <b>{point.percentage:.1f}%</b>'
+    },
+    accessibility: {
+        point: {
+            valueSuffix: '%'
+        }
+    },
+    plotOptions: {
+        pie: {
+            allowPointSelect: true,
+            cursor: 'pointer',
+            dataLabels: {
+                enabled: true,
+                format: '<b>{point.name}</b>: {point.percentage:.1f} %'
+            }
+        }
+    },
+    series: [{
+        name: 'Brands',
+        colorByPoint: true,
+        data: [{
+            name: '좋아요',
+            y: (function() {
+					var data = document.getElementById("positive").value
+					data= data.replace("[",'');
+					data = data.replace("]",'');
+					var arr = data.split(",");
+					return parseFloat(arr[recipient-1]);
+				})(),
+            sliced: true,
+            selected: true
+        }, {
+            name: '싫어요',
+            y: (function() {
+					var data = document.getElementById("negative").value
+					data= data.replace("[",'');
+					data = data.replace("]",'');
+					var arr = data.split(",");
+					return parseFloat(arr[recipient-1]);
+				})()
+        }]
+    }]
+});
+	});
+});
 </script>
 {% endblock %}
 </body>
