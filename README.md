@@ -30,4 +30,8 @@ SentimentIntensityAnalyzer().polarity_scores를 사용해 각 트위터 댓글�
 # 동작 시나리오
 ![image](https://github.com/Park-HyoungJoon/MovieReco/assets/83392856/8e50b897-f2f5-43e8-a536-cf894961ca5d)
 
+# 결과 화면
+![image](https://github.com/Park-HyoungJoon/MovieReco/assets/83392856/e9b98e63-d41b-4b83-855e-fd22295adc2a)
+![image](https://github.com/Park-HyoungJoon/MovieReco/assets/83392856/0ddce1d5-d6a2-42ba-b8b5-2a621430a19a)
+![image](https://github.com/Park-HyoungJoon/MovieReco/assets/83392856/28e2adec-0c95-4200-af91-cf3d7c32a975)
 
